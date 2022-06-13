@@ -26,6 +26,7 @@ let circle3 = { x: X / 4 * 2 + BALL_RADIUS * 4, y: Y / 2, vx: 0, vy: 0, r: BALL_
 let circles = [circle1, circle2, circle3];
 */
 
+//　必要なボールのオブジェクト作成 
 let circle1 = { x: X / 4 * 3 + 30, y: Y / 2, vx: -10, vy: 0, r: BALL_RADIUS, colour: "red" };
 let circle2 = { x: X / 5 * 2 + 5, y: Y / 2, vx: 0, vy: 0, r: BALL_RADIUS, colour: "blue" };
 let circle3 = {
@@ -49,7 +50,6 @@ let circle6 = { x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2 - 5, y: Y / 2
 let circle7 = { x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2 - 5, y: Y / 2 - BALL_RADIUS * 2, vx: 0, vy: 0, r: BALL_RADIUS, colour: "green" };
 
 let circles = [circle1, circle2, circle3, circle4, circle5, circle6, circle7];
-
 
 function totalSpeed() {
     let total = 0;
@@ -165,6 +165,7 @@ function main() {
     for (let i = 0; i < circles.length; i++) {
         drawCircle(circles[i]);
     }
+    // circle[i]とcircle[j]が当たってるか判定、当たってれば速度を変え、いい感じにoverlapをなくす
     for (let i = 0; i < circles.length - 1; i++) {
         for (let j = i + 1; j < circles.length; j++) {
             if (collisionDetection(circles[i], circles[j])) {
