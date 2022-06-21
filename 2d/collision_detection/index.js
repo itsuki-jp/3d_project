@@ -31,16 +31,21 @@ let circles = [circle1, circle2, circle3];
 //　必要なボールのオブジェクト作成(初期配置)
 function initCirclePos() {
     let circles = [
-        new Circle(1, X / 4 * 3 + 30, Y / 2, 0, 0, BALL_RADIUS, "red"),
-        new Circle(2, X / 5 * 2, Y / 2, 0, 0, BALL_RADIUS, "blue"),
-        new Circle(3, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2), Y / 2 + BALL_RADIUS, 0, 0, BALL_RADIUS, "yellow"),
-        new Circle(4, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2), Y / 2 - BALL_RADIUS, 0, 0, BALL_RADIUS, "purple"),
-        new Circle(5, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2 + BALL_RADIUS * 2, 0, 0, BALL_RADIUS, "white"),
-        new Circle(6, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2, 0, 0, BALL_RADIUS, "pink"),
-        new Circle(7, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2 - BALL_RADIUS * 2, 0, 0, BALL_RADIUS, "green")
+        new Circle(0, X / 4 * 3 + 30, Y / 2, 0, 0, BALL_RADIUS, "white"),
+        new Circle(1, X / 5 * 2, Y / 2, 0, 0, BALL_RADIUS, "blue"),
+        new Circle(2, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2), Y / 2 + BALL_RADIUS, 0, 0, BALL_RADIUS, "yellow"),
+        new Circle(3, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2), Y / 2 - BALL_RADIUS, 0, 0, BALL_RADIUS, "purple"),
+        new Circle(4, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2 + BALL_RADIUS * 2, 0, 0, BALL_RADIUS, "red"),
+        new Circle(5, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2, 0, 0, BALL_RADIUS, "black"),
+        new Circle(6, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2 - BALL_RADIUS * 2, 0, 0, BALL_RADIUS, "magenta"),
+        new Circle(7, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 3, Y / 2 + BALL_RADIUS, 0, 0, BALL_RADIUS, "pink"),
+        new Circle(8, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 3, Y / 2 - BALL_RADIUS, 0, 0, BALL_RADIUS, "green"),
+        new Circle(9, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 4, Y / 2, 0, 0, BALL_RADIUS, "lightgreen"),
+
     ];
     return circles;
 }
+
 let circles = initCirclePos();
 
 let edges = [
@@ -91,8 +96,8 @@ function dropSpeed(datas) {
             cnt++;
             continue;
         }
-        datas[i].vx *= 0.95;
-        datas[i].vy *= 0.95;
+        datas[i].vx *= 0.9;
+        datas[i].vy *= 0.9;
     }
     counter = 0;
 }
@@ -109,7 +114,7 @@ function collisionDetection(data1, data2) {
 function isBallFall(data) {
     for (let edge of edges) {
         if (collisionDetection(data, edge)) {
-            if (data.id == 1) {
+            if (data.id == 0) {
                 console.log("LOOOOSE");
             }
             return true;
@@ -259,5 +264,5 @@ ctx.closePath();
 
 let interval = setInterval(() => {
     main();
-    if (circles[0].id != 1) { clearInterval(interval); }
+    if (circles[0].id != 0) { clearInterval(interval); }
 }, TIME);
