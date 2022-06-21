@@ -5,12 +5,14 @@ const X = 800;
 const Y = 500;
 canvas.width = X;
 canvas.height = Y;
-const TIME = 50;
+const TIME = 10;
 let counter = 0;
 const BALL_RADIUS = 20;
 const buff = 5;
+
 class Circle {
-    constructor(x, y, vx, vy, r, colour) {
+    constructor(id, x, y, vx, vy, r, colour) {
+        this.id = id;
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -26,36 +28,34 @@ let circle3 = { x: X / 4 * 2 + BALL_RADIUS * 4, y: Y / 2, vx: 0, vy: 0, r: BALL_
 let circles = [circle1, circle2, circle3];
 */
 
-//　必要なボールのオブジェクト作成 
-let circle1 = { x: X / 4 * 3 + 30, y: Y / 2, vx: -10, vy: 0, r: BALL_RADIUS, colour: "red" };
-let circle2 = { x: X / 5 * 2 + 5, y: Y / 2, vx: 0, vy: 0, r: BALL_RADIUS, colour: "blue" };
-let circle3 = {
-    x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2),
-    y: Y / 2 + BALL_RADIUS,
-    vx: 0,
-    vy: 0,
-    r: BALL_RADIUS,
-    colour: "yellow"
-};
-let circle4 = {
-    x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2),
-    y: Y / 2 - BALL_RADIUS,
-    vx: 0,
-    vy: 0,
-    r: BALL_RADIUS,
-    colour: "purple"
-};
-let circle5 = { x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2 - 5, y: Y / 2 + BALL_RADIUS * 2, vx: 0, vy: 0, r: BALL_RADIUS, colour: "white" };
-let circle6 = { x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2 - 5, y: Y / 2, vx: 0, vy: 0, r: BALL_RADIUS, colour: "pink" };
-let circle7 = { x: X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2 - 5, y: Y / 2 - BALL_RADIUS * 2, vx: 0, vy: 0, r: BALL_RADIUS, colour: "green" };
+//　必要なボールのオブジェクト作成(初期配置)
+function initCirclePos() {
+    let circles = [
+        new Circle(1, X / 4 * 3 + 30, Y / 2, 0, 0, BALL_RADIUS, "red"),
+        new Circle(2, X / 5 * 2, Y / 2, 0, 0, BALL_RADIUS, "blue"),
+        new Circle(3, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2), Y / 2 + BALL_RADIUS, 0, 0, BALL_RADIUS, "yellow"),
+        new Circle(4, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2), Y / 2 - BALL_RADIUS, 0, 0, BALL_RADIUS, "purple"),
+        new Circle(5, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2 + BALL_RADIUS * 2, 0, 0, BALL_RADIUS, "white"),
+        new Circle(6, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2, 0, 0, BALL_RADIUS, "pink"),
+        new Circle(7, X / 5 * 2 - Math.sqrt(3 * BALL_RADIUS ** 2) * 2, Y / 2 - BALL_RADIUS * 2, 0, 0, BALL_RADIUS, "green")
+    ];
+    return circles;
+}
+let circles = initCirclePos();
 
-let circles = [circle1, circle2, circle3, circle4, circle5, circle6, circle7];
+let edges = [
+    { x: 0, y: 0, r: BALL_RADIUS * 1.5, colour: "black" },
+    { x: X, y: 0, r: BALL_RADIUS * 1.5, colour: "black" },
+    { x: 0, y: Y, r: BALL_RADIUS * 1.5, colour: "black" },
+    { x: X, y: Y, r: BALL_RADIUS * 1.5, colour: "black" }
+];
 
 function totalSpeed() {
     let total = 0;
     for (let i = 0; i < circles.length; i++) {
         total += circles[i].vx ** 2 + circles[i].vy ** 2;
     }
+    return total;
 }
 
 function init() {
@@ -64,15 +64,21 @@ function init() {
     ctx.fillRect(0, 0, X, Y);
 }
 
-function drawCircle(data) {
+function drawCircle(data, t = "ball") {
+    if (t === "ball") {
+        onBoard(data);
+        dropSpeed(data);
+        moveBall(data);
+    }
     ctx.beginPath();
-    onBoard(data);
-    dropSpeed(data);
     ctx.fillStyle = data.colour;
-    data.x += data.vx;
-    data.y += data.vy;
     ctx.arc(data.x, data.y, data.r, 0, Math.PI * 2);
     ctx.fill();
+}
+
+function moveBall(data) {
+    data.x += data.vx;
+    data.y += data.vy;
 }
 
 function dropSpeed(datas) {
@@ -96,6 +102,18 @@ function collisionDetection(data1, data2) {
     let r = (data1.r + data2.r) ** 2;
     if (((data1.x - data2.x) ** 2 + (data1.y - data2.y) ** 2) <= (data1.r + data2.r) ** 2) {
         return true;
+    }
+    return false;
+}
+
+function isBallFall(data) {
+    for (let edge of edges) {
+        if (collisionDetection(data, edge)) {
+            if (data.id == 1) {
+                console.log("LOOOOSE");
+            }
+            return true;
+        }
     }
     return false;
 }
@@ -161,9 +179,14 @@ function onBoard(data) {
 function main() {
     dropSpeed(circles);
     init();
-    //totalSpeed();
+    if (mouseClicked) {
+        mouseLine();
+    }
     for (let i = 0; i < circles.length; i++) {
         drawCircle(circles[i]);
+    }
+    for (let i = 0; i < edges.length; i++) {
+        drawCircle(edges[i], "edge");
     }
     // circle[i]とcircle[j]が当たってるか判定、当たってれば速度を変え、いい感じにoverlapをなくす
     for (let i = 0; i < circles.length - 1; i++) {
@@ -176,6 +199,65 @@ function main() {
             }
         }
     }
+    let new_circles = [];
+    for (let i = 0; i < circles.length; i++) {
+        if (!isBallFall(circles[i])) {
+            new_circles.push(circles[i]);
+        }
+    }
+    circles = new_circles;
 }
-setInterval(() => main(), TIME);
+
+let mouseClicked = false;
+let mouseClickedPosition = {};
+let mouseCurrentPosition = {};
+
+function mouseDown(event) {
+    if (totalSpeed() !== 0) { return; }
+    console.log("mouseDown");
+    mouseClicked = true;
+    let rect = event.target.getBoundingClientRect();
+    mouseClickedPosition.x = event.clientX - rect.left;
+    mouseClickedPosition.y = event.clientY - rect.top;
+}
+
+function moveMainBall(mainBall) {
+    if (totalSpeed() !== 0) { return; }
+    console.log("ballMove");
+    let dx = -mouseCurrentPosition.x + mouseClickedPosition.x;
+    let dy = -mouseCurrentPosition.y + mouseClickedPosition.y;
+    mainBall.vx = dx / 10;
+    mainBall.vy = dy / 10;
+    console.log(mainBall)
+}
+
+function mouseMove(event) {
+    let rect = event.target.getBoundingClientRect();
+    mouseCurrentPosition.x = event.clientX - rect.left;
+    mouseCurrentPosition.y = event.clientY - rect.top;
+}
+
+function mouseLine() {
+    ctx.beginPath();
+    ctx.moveTo(mouseClickedPosition.x, mouseClickedPosition.y);
+    ctx.lineTo(mouseCurrentPosition.x, mouseCurrentPosition.y)
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 10;
+    ctx.stroke();
+}
+
+canvas.addEventListener("mousedown", mouseDown);
+
+canvas.addEventListener("mouseup", () => {
+    console.log("mouseUp")
+    mouseClicked = false;
+    moveMainBall(circles[0]);
+});
+
+canvas.addEventListener("mousemove", mouseMove);
 ctx.closePath();
+
+let interval = setInterval(() => {
+    main();
+    if (circles[0].id != 1) { clearInterval(interval); }
+}, TIME);
