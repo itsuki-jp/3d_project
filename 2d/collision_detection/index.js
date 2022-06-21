@@ -6,9 +6,7 @@ const Y = 500;
 canvas.width = X;
 canvas.height = Y;
 const TIME = 10;
-let counter = 0;
 const BALL_RADIUS = 20;
-const buff = 5;
 
 let requireRePosition = false;
 
@@ -72,6 +70,7 @@ function init() {
     ctx.beginPath();
     ctx.fillStyle = "green";
     ctx.fillRect(0, 0, X, Y);
+    ctx.closePath();
 }
 
 function drawCircle(data, t = "ball") {
@@ -84,6 +83,7 @@ function drawCircle(data, t = "ball") {
     ctx.fillStyle = data.colour;
     ctx.arc(data.x, data.y, data.r, 0, Math.PI * 2);
     ctx.fill();
+    ctx.beginPath();
 }
 
 function moveBall(data) {
@@ -92,7 +92,7 @@ function moveBall(data) {
 }
 
 function dropSpeed(data) {
-    if (data.counter < 10) { data.counter++; return; }
+    if (data.counter < 8) { data.counter++; return; }
     cnt = 0;
     if (data.vx ** 2 + data.vy ** 2 <= 0.01) {
         data.vx = 0;
@@ -184,9 +184,20 @@ function onBoard(data) {
 }
 
 function isGameEnd() {
-    if ((circles.length === 1)) {
+    if ((circles.length === 1) && (circles[0].id === 0)) {
         return true;
     } else { return false; }
+}
+
+function gameClearScreen() {
+    console.log("game clear!!!");
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(0, 0, 255)';
+    ctx.font = '48px serif';
+    let message = "GAME CLEAR!!!";
+    let width = ctx.measureText(message).width;
+    ctx.fillText(message, (X - width) / 2, Y / 2);
+    ctx.closePath();
 }
 
 function main() {
@@ -274,6 +285,25 @@ ctx.closePath();
 let interval = setInterval(() => {
     main();
     if (isGameEnd()) {
+        console.log("END");
+        let maxReverberationTime = Math.floor(1000 / TIME);
+        let reverberationInterval = setInterval(() => {
+            console.log("inner end");
+            if (maxReverberationTime === 0) {
+                gameClearScreen();
+                clearInterval(reverberationInterval);
+                return;
+            }
+            main();
+            maxReverberationTime--;
+        }, TIME);
         clearInterval(interval);
     }
 }, TIME);
+
+document.getElementById("restartButton").addEventListener("click", () => {
+    circles = initCirclePos();
+    mouseClicked = false;
+    mouseClickedPosition = {};
+    mouseCurrentPosition = {};
+})
