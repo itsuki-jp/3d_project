@@ -21,6 +21,7 @@ class Circle {
         this.vy = vy;
         this.r = r;
         this.colour = colour;
+        this.counter = 0;
     }
 }
 /*
@@ -75,8 +76,8 @@ function init() {
 
 function drawCircle(data, t = "ball") {
     if (t === "ball") {
-        onBoard(data);
         dropSpeed(data);
+        onBoard(data);
         moveBall(data);
     }
     ctx.beginPath();
@@ -90,20 +91,19 @@ function moveBall(data) {
     data.y += data.vy;
 }
 
-function dropSpeed(datas) {
-    if (counter < 10) { counter++; return; }
+function dropSpeed(data) {
+    if (data.counter < 10) { data.counter++; return; }
     cnt = 0;
-    for (let i = 0; i < datas.length; i++) {
-        if (datas[i].vx ** 2 + datas[i].vy ** 2 <= 0.01) {
-            datas[i].vx = 0;
-            datas[i].vy = 0;
-            cnt++;
-            continue;
-        }
-        datas[i].vx *= 0.9;
-        datas[i].vy *= 0.9;
+    if (data.vx ** 2 + data.vy ** 2 <= 0.01) {
+        data.vx = 0;
+        data.vy = 0;
+        cnt++;
+        return;
     }
-    counter = 0;
+    data.vx *= 0.96;
+    data.vy *= 0.96;
+
+    data.counter = 0;
 }
 
 function collisionDetection(data1, data2) {
@@ -184,18 +184,17 @@ function onBoard(data) {
 }
 
 function isGameEnd() {
-    if (circles.length === 1) {
-        console.log("END!!!!!");
-    }
+    if ((circles.length === 1)) {
+        return true;
+    } else { return false; }
 }
 
 function main() {
+    init();
     if ((totalSpeed() === 0) && (requireRePosition)) {
         circles.unshift(new Circle(0, X / 4 * 3 + 30, Y / 2, 0, 0, BALL_RADIUS, "white"));
         requireRePosition = false;
     }
-    dropSpeed(circles);
-    init();
     if (mouseClicked) {
         mouseLine();
     }
