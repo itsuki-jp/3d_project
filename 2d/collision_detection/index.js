@@ -282,28 +282,32 @@ canvas.addEventListener("mouseup", () => {
 canvas.addEventListener("mousemove", mouseMove);
 ctx.closePath();
 
-let interval = setInterval(() => {
-    main();
-    if (isGameEnd()) {
-        console.log("END");
-        let maxReverberationTime = Math.floor(1000 / TIME);
-        let reverberationInterval = setInterval(() => {
-            console.log("inner end");
-            if (maxReverberationTime === 0) {
-                gameClearScreen();
-                clearInterval(reverberationInterval);
-                return;
-            }
-            main();
-            maxReverberationTime--;
-        }, TIME);
-        clearInterval(interval);
-    }
-}, TIME);
+function startGame() {
+    let interval = setInterval(() => {
+        main();
+        if (isGameEnd()) {
+            console.log("END");
+            let maxReverberationTime = Math.floor(1000 / TIME);
+            let reverberationInterval = setInterval(() => {
+                console.log("inner end");
+                if (maxReverberationTime === 0) {
+                    gameClearScreen();
+                    clearInterval(reverberationInterval);
+                    return;
+                }
+                main();
+                maxReverberationTime--;
+            }, TIME);
+            clearInterval(interval);
+        }
+    }, TIME);
+}
 
 document.getElementById("restartButton").addEventListener("click", () => {
     circles = initCirclePos();
     mouseClicked = false;
     mouseClickedPosition = {};
     mouseCurrentPosition = {};
+    startGame();
 })
+startGame();
