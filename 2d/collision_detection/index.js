@@ -9,6 +9,8 @@ const TIME = 10;
 const BALL_RADIUS = 20;
 
 let requireRePosition = false;
+let time = 0;
+let step;
 
 class Circle {
     constructor(id, x, y, vx, vy, r, colour) {
@@ -197,6 +199,8 @@ function gameClearScreen() {
     let message = "GAME CLEAR!!!";
     let width = ctx.measureText(message).width;
     ctx.fillText(message, (X - width) / 2, Y / 2);
+    let timeAndStepMessage = `Step : ${step}, Time : ${time / 1000}`;
+    ctx.fillText(timeAndStepMessage, (X - ctx.measureText(timeAndStepMessage).width) / 2, Y / 2 + 100);
     ctx.closePath();
 }
 
@@ -255,6 +259,7 @@ function moveMainBall(mainBall) {
     let dy = -mouseCurrentPosition.y + mouseClickedPosition.y;
     mainBall.vx = dx / 10;
     mainBall.vy = dy / 10;
+    step++;
 }
 
 function mouseMove(event) {
@@ -283,20 +288,21 @@ canvas.addEventListener("mousemove", mouseMove);
 ctx.closePath();
 
 function startGame() {
+    time = 0;
+    step = 0;
     let interval = setInterval(() => {
         main();
+        document.getElementById("time_step").innerText = `Step : ${step}, Time : ${time / 1000}`;
+        time += TIME
         if (isGameEnd()) {
             console.log("END");
-            let maxReverberationTime = Math.floor(1000 / TIME);
             let reverberationInterval = setInterval(() => {
-                console.log("inner end");
-                if (maxReverberationTime === 0) {
+                if (totalSpeed() === 0) {
                     gameClearScreen();
                     clearInterval(reverberationInterval);
                     return;
                 }
                 main();
-                maxReverberationTime--;
             }, TIME);
             clearInterval(interval);
         }
