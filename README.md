@@ -1,6 +1,8 @@
 # 3d_project
 
-## ビリヤード
+## 2D
+
+### ビリヤード
 
 リンク:https://itsuki-jp.github.io/3d_project/2d/collision_detection
 
@@ -15,3 +17,15 @@
 - ランダム性？を持たせる
 - スタート(必要?)・~~クリア画面~~
 - ~~スコアも出来たら表示~~
+
+## 迷路
+リンク:https://itsuki-jp.github.io/3d_project/2d/maze/
+
+操作方法：矢印キーで移動
+
+人数：１人
+
+やること：
+- 迷路の生成を再帰を用いて行う（何も考えずWhileでやると重すぎる）
+- 最長経路を見つける
+- なめらかに動かしたい
