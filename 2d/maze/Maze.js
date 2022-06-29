@@ -1,3 +1,4 @@
+"use strict";
 class Maze {
     constructor(h, w) {
         this.h = h;
@@ -7,7 +8,9 @@ class Maze {
         this.mazeMap = [];
         this.availableRoad = [];
         this.initMaze();
+
         while (this.availableRoad.length !== 0) {
+            console.log("createMaze called")
             this.createMaze();
         }
     }
@@ -34,38 +37,75 @@ class Maze {
         return [Number(splitted[0]), Number(splitted[1])];
     }
 
+    shuffle([...array]) {
+        for (let i = array.length - 1; i >= 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
     // 迷路を生成(壁伸ばし方)
     createMaze() {
+        let count = 0;
         let [y, x] = this.splitPos2Two(this.availableRoad[Math.floor(Math.random() * this.availableRoad.length)]);
         let newWall = new Set([`${y}_${x}`]);
+        let stack = [];
+        let dy, dx;
         while (true) {
+            stack.push(`${y}_${x}`);
             let direction = [
                 [2, 0],
                 [-2, 0],
                 [0, 2],
                 [0, -2]
             ];
-            let nxt_direction = direction[Math.floor(Math.random() * direction.length)];
-            let [dy, dx] = [nxt_direction[0], nxt_direction[1]];
-            let [ny, nx] = [y + dy, x + dx];
+            direction = this.shuffle(direction);
+            let ok = false;
+            let pushed = false;
+            for (let i = 0; i < direction.length; i++) {
+                count++;
+                if (count === 1000) {
+                    console.log();
+                }
+                let nxt_direction = direction[i];
+                [dy, dx] = [nxt_direction[0], nxt_direction[1]];
+                let [ny, nx] = [y + dy, x + dx];
 
-            let idx = this.availableRoad.indexOf(`${ny}_${nx}`);
-            if (idx !== -1) {
-                return false;
-            } else {
-                newWall.add(`${y}_${x}`);
-                newWall.add(`${y + dy/2}_${x + dx /2}`);
-                if (this.mazeMap[ny][nx] === this.wall) { break; }
+                let idx = this.availableRoad.indexOf(`${ny}_${nx}`);
+                if (newWall.has(`${ny}_${nx}`)) {
+                    continue;
+                } else {
+                    newWall.add(`${y}_${x}`);
+
+                    stack.push(`${y + dy/2}_${x + dx /2}`);
+                    pushed = true;
+
+                    if (this.mazeMap[ny][nx] === this.wall) { ok = true; }
+                }
+                if (ny % 2 !== 0 || nx % 2 !== 0) {
+                    console.log();
+                }
+                [y, x] = [ny, nx];
+                if (ok) {
+                    stack.push(`${y}_${x}`);
+                    for (let pos of stack) {
+                        [y, x] = this.splitPos2Two(pos);
+                        this.mazeMap[y][x] = this.wall;
+                        let idx = this.availableRoad.indexOf(pos);
+                        if (idx !== -1) {
+                            this.availableRoad.splice(idx, 1);
+                        }
+                    }
+                    break;
+                }
             }
+            if (!ok) {
+                if (pushed) { stack.pop(); }
+                [y, x] = this.splitPos2Two(stack.pop());
+            } else { break; }
+        }
 
-            [y, x] = [ny, nx];
-        }
-        for (let pos of newWall) {
-            [y, x] = this.splitPos2Two(pos);
-            this.mazeMap[y][x] = this.wall;
-            let idx = this.availableRoad.indexOf(pos);
-            if (idx !== -1) { this.availableRoad.splice(idx, 1); }
-        }
         return true;
     }
 
@@ -94,4 +134,5 @@ class Maze {
         }
         ctx.closePath();
     }
+    bfsMain() {}
 }
