@@ -1,6 +1,3 @@
-import { LinkedList } from "./LinkedList";
-window.LinkedList = LinkedList;
-
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d');
 let canvasSize = [11, 11];

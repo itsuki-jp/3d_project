@@ -1,4 +1,9 @@
 "use strict";
+
+import { LinkedList } from "./LinkedList";
+window.LinkedList = LinkedList;
+
+
 class Maze {
     constructor(h, w) {
         this.h = h;
