@@ -93,14 +93,4 @@ LinkedList.prototype.popleft = function(position) {
 
     return res.data;
 };
-
-/*
-let tempLink = new LinkedList();
-tempLink.push([1, 2]);
-tempLink.push([1, 2]);
-tempLink.push([1, 2]);
-let popped = tempLink.pop();
-popped[0] = 100;
-console.log(popped)
-console.log(tempLink);
-*/
+export { LinkedList };
