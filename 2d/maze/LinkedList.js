@@ -93,4 +93,3 @@ LinkedList.prototype.popleft = function(position) {
 
     return res.data;
 };
-export { LinkedList };
